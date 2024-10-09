@@ -5,13 +5,26 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "./screens/ProductList";
 import CreateNewProduct from "./screens/CreateNewProduct";
+import ProductDetails from "./screens/ProductDetails";
+import Login from "./screens/Login";
+import Register from "./screens/Register";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Product List">
+      <Stack.Navigator initialRouteName="LoginScreen">
+        <Stack.Screen
+          name="LoginScreen"
+          component={Login}
+          options={{ title: "Login", headerShown: false }}
+        />
+        <Stack.Screen
+          name="RegisterScreen"
+          component={Register}
+          options={{ title: "Register", headerShown: false }}
+        />
         <Stack.Screen
           name="Product List"
           component={HomeScreen}
@@ -22,16 +35,13 @@ export default function App() {
           component={CreateNewProduct}
           options={{ title: "Create New Product" }}
         />
+        <Stack.Screen
+          name="Product Details"
+          component={ProductDetails}
+          options={{ title: "Product" }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
+    // <Register />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
