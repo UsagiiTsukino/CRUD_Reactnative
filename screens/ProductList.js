@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   FlatList,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -14,10 +15,16 @@ import {
   QuerySnapshot,
   setDoc,
 } from "firebase/firestore";
+import { launchImageLibrary } from "react-native-image-picker";
 import db from "../firebase/firebase.config";
 import emptyList from "../image/ext/rolled_eyes.png";
-function ProductList({ navigation }) {
+import formatPrice from "../helpers/formatPrice";
+import LogOutIcon from "../assets/logout.webp";
+function ProductList({ route, navigation }) {
   const [products, setProducts] = useState([]);
+  const isMobile = Platform.OS === "android" || Platform.OS === "ios";
+  const user = route.params.user;
+
   useEffect(() => {
     const colRef = collection(db, "product");
     onSnapshot(colRef, (QuerySnapshot) => {
@@ -38,12 +45,54 @@ function ProductList({ navigation }) {
 
   return (
     <View>
-      <Pressable
-        style={styles.buttonAdd}
-        onPress={() => navigation.navigate("Create New Product")}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
       >
-        <Text style={styles.textButton}>CREATE USER</Text>
-      </Pressable>
+        <Pressable
+          style={styles.buttonAdd}
+          onPress={() => navigation.navigate("Create New Product")}
+        >
+          <Text style={styles.textButton}>Thêm sản phẩm</Text>
+        </Pressable>
+        <View>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={{
+                uri: user.avatar_link,
+              }}
+              style={styles.imagePre}
+            />
+            <View>
+              <Text> Xin chào, </Text>
+              <Text>{user.name}</Text>
+            </View>
+            <View>
+              <Pressable style={styles.buttonLogOut}>
+                <Image
+                  source={{
+                    uri: "../assets/logout.webp",
+                  }}
+                  style={{
+                    height: 30,
+                    width: 30,
+                  }}
+                />
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </View>
+
       <FlatList
         style={{ height: "100%" }}
         data={products}
@@ -72,7 +121,7 @@ function ProductList({ navigation }) {
             </View>
             <View>
               <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemMail}>{item.price}</Text>
+              <Text style={styles.itemMail}>{formatPrice(item.price)} VNĐ</Text>
             </View>
           </Pressable>
         )}
@@ -127,6 +176,14 @@ const styles = StyleSheet.create({
   },
   itemMail: {
     fontWeight: "300",
+  },
+  buttonLogOut: {
+    alignItems: "center",
+    justifyContent: "center",
+    // elevation: 3,
+    padding: 2,
+    marginLeft: 20,
+    marginRight: 20,
   },
 });
 export default ProductList;

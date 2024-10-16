@@ -10,6 +10,7 @@ import Logo from "../Components/Logo";
 import Header from "../Components/Header";
 import TextInput from "../Components/TextInput";
 import Button from "../Components/Button";
+const blank_avatar = "../assets/Blank-Avatar.webp";
 
 import { addDoc, collection } from "firebase/firestore";
 import db from "../firebase/firebase.config";
@@ -33,17 +34,20 @@ export default function Register({ navigation }) {
       setUsername({ ...username, error: usernameError });
       return;
     } else {
-      const response = await http.post("/register", {
-        username: username.value,
-        password: password.value,
+      const user = {
+        name: name.value,
         email: email.value,
-        displayName: name.value,
-      });
-      if (response.data.code === 11000) {
-        console.log("That bai");
-      } else {
-        console.log("Thanh cong");
-      }
+        password: password.value,
+        username: username.value,
+        avatar_link: blank_avatar,
+      };
+      await addDoc(collection(db, "users"), user)
+        .then(() => {
+          navigation.navigate("Product List", { user });
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
     }
   };
 
